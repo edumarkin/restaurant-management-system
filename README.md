@@ -1,100 +1,40 @@
-# 🍽️ Restaurant Management System
+# Restaurant Management System
 
-A JavaFX desktop application for managing a restaurant — branches, menus, tables, reservations, orders, kitchen workflow, billing, and payments. Built with **Java 17 + JavaFX 21 + MySQL 8 + Maven**, designed to be readable and beginner-friendly.
+A desktop application built with Java and JavaFX that lets a restaurant team manage everything — from taking reservations to sending food to the kitchen and processing payments — all from one place.
 
----
-
-## ✨ Features
-
-Five fully-working roles, each with their own dashboard:
-
-| Role | What they can do |
-|------|------------------|
-| **Manager** | Overview stats · CRUD employees · CRUD menu items · CRUD tables |
-| **Receptionist** | Search free tables by date/time/people · Reserve · Auto-create new customers · Check-in · Cancel reservations |
-| **Waiter** | Pick a table · Start a new order · Add menu items per seat with quantity · Send order to kitchen · View active orders |
-| **Chef** | Kitchen queue showing all `PREPARING` orders · Inspect order items · Mark as ready |
-| **Cashier** | Issue check (auto 10 % tax) · Add tip · Pay with **Cash / Credit Card / Check** · Auto-completes order and frees the table |
-
-Plus: dark themed UI with a warm orange accent, login screen with one demo account per role, automatic table-status tracking (FREE → RESERVED → OCCUPIED → FREE), and reservation-conflict detection (±2 hours).
+This was built as a university project, but it works like a real system. Five different staff roles each get their own screen, and they all connect to the same database, so changes made by one person show up for everyone else in real time.
 
 ---
 
-## 🧰 Prerequisites
+## What it does
 
-You need these installed:
+When a customer walks in or calls to book a table, the **receptionist** searches for available tables by date, time, and party size. If one is free, they reserve it in seconds. The system automatically marks that table as reserved so no one double-books it.
 
-1. **JDK 17 or newer** — [Adoptium / Temurin](https://adoptium.net/) is free and works great
-2. **MySQL Server 8.x** — running locally on `localhost:3306`
-3. **IntelliJ IDEA** — Community Edition is fine
-4. **MySQL Workbench** (or the `mysql` CLI) — for running the schema file
+When the customer arrives and sits down, the **waiter** opens a new order for their table, picks items from the menu for each seat, and sends the order to the kitchen with one click.
 
-> ⚠️ Maven is **not** required separately — IntelliJ has it bundled.
+The **chef** sees every incoming order appear in their kitchen queue. They can expand any order to see exactly what each seat ordered, then mark it as ready when the food is plated.
+
+The **cashier** pulls up the bill, applies a tip if the customer wants, and processes payment — cash, card, or check. The moment the bill is paid, the table automatically goes back to "free" so the receptionist can book it again.
+
+The **manager** has an overview of everything — how many employees are working, how many tables are occupied, upcoming reservations — and can add or remove staff, update the menu, and manage tables.
+
+On top of all this, the system automatically pops up a notification when a reservation is coming up in the next 30 minutes, so the front desk never misses a booking.
 
 ---
 
-## 🚀 Setup — Step by Step
+## Tech stack
 
-### Step 1 — Create the database
+- **Java 17** — the programming language
+- **JavaFX 21** — for building the desktop UI (all in code, no FXML)
+- **MySQL 8** — the database that stores everything
+- **Maven** — handles dependencies and building the project
+- **JDBC** — for talking to the database directly (no ORM, easy to read)
 
-Open **MySQL Workbench** (or the terminal `mysql` client) and run the SQL file at:
+---
 
-```
-src/main/resources/sql/schema.sql
-```
+## Accounts for testing
 
-In Workbench: `File → Open SQL Script…`, choose `schema.sql`, then click the ⚡ lightning bolt to execute the whole script.
-In CLI:
-```bash
-mysql -u root -p < src/main/resources/sql/schema.sql
-```
-
-This creates the `restaurant_db` database, all tables, and the seed data (1 demo account per role + sample menu + 6 tables).
-
-### Step 2 — Configure the connection
-
-Open **`src/main/resources/db.properties`** and edit the `db.user` and `db.password` so they match your local MySQL:
-
-```properties
-db.url=jdbc:mysql://localhost:3306/restaurant_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-db.user=root
-db.password=YOUR_MYSQL_PASSWORD_HERE
-```
-
-### Step 3 — Open the project in IntelliJ
-
-1. Launch IntelliJ IDEA.
-2. **File → Open…** → select the `restaurant-management-system` folder (the one containing `pom.xml`) → click **OK**.
-3. IntelliJ will detect it as a Maven project. When the popup appears, click **Load Maven Project** / **Trust Project**.
-4. Wait for the bottom-right progress bar to finish (it's downloading JavaFX and the MySQL connector — first time only, ~30 seconds).
-5. Make sure the project SDK is set: **File → Project Structure → Project → SDK** → pick a 17 or higher JDK. Set **Language Level** to **17**.
-
-### Step 4 — Run it
-
-You have two options. **Option A** is the easiest.
-
-#### ✅ Option A — Run via the Maven JavaFX plugin (recommended)
-
-1. Open the **Maven** tool window on the right side of IntelliJ.
-2. Expand `restaurant-management-system → Plugins → javafx`.
-3. Double-click **`javafx:run`**.
-
-That's it — the app launches.
-
-#### Option B — Run `Main.java` directly
-
-1. Open `src/main/java/com/restaurant/app/Main.java`.
-2. Click the green ▶ next to the `main` method.
-
-If JavaFX complains about missing modules with this option, use Option A instead, or add these VM options to the run configuration (**Run → Edit Configurations… → Modify options → Add VM options**):
-
-```
---module-path "/path/to/javafx-sdk-21/lib" --add-modules javafx.controls,javafx.fxml
-```
-
-### Step 5 — Log in
-
-The login screen accepts these demo accounts (all use password `1234`):
+All accounts use the password `1234`.
 
 | Username | Role |
 |----------|------|
@@ -106,65 +46,141 @@ The login screen accepts these demo accounts (all use password `1234`):
 
 ---
 
-## 🎬 Suggested demo flow (impress your professor)
+## Getting it running
 
-1. Log in as **receptionist** → reserve Table 4 for 4 people for tonight at 19:00 → use phone `+998935551122` (existing customer John Doe).
-2. Log out, log in as **waiter** → pick Table 4 → "Start new order" → add Caesar Salad (seat 1), Beef Steak (seat 1), Margherita Pizza (seat 2), Cola ×2 → click **Send to kitchen**.
-3. Log in as **chef** → see the order in the kitchen queue → click on it to view items per seat → click **Mark as Ready**.
-4. Log in as **cashier** → "Issue check" tab → select the order → **Issue check** (10% tax computed automatically) → switch to "Unpaid bills" tab → set tip $5 → **Pay (CASH)**.
-5. Log in as **manager** → Overview shows updated stats; Tables tab shows Table 4 is back to FREE.
+### What you need installed first
+
+- **JDK 17 or newer** — grab it from [adoptium.net](https://adoptium.net) if you don't have it
+- **MySQL 8** — download the installer from [dev.mysql.com](https://dev.mysql.com/downloads/installer/)
+- **MySQL Workbench** — comes with the MySQL installer, used to set up the database
+- **IntelliJ IDEA** — Community Edition is free and works perfectly
+
+### Step 1 — Set up the database
+
+Open MySQL Workbench, connect to your local MySQL server, then go to:
+
+**File → Open SQL Script → select `src/main/resources/sql/schema.sql`**
+
+Click the lightning bolt ⚡ to run the whole script. It will create the `restaurant_db` database with all the tables and fill it with sample data — a menu, 6 tables, and one staff account per role.
+
+### Step 2 — Enter your MySQL password
+
+Open the file `src/main/resources/db.properties` in any text editor and change the password to whatever you set when you installed MySQL:
+
+```
+db.url=jdbc:mysql://localhost:3306/restaurant_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+db.user=root
+db.password=your_password_here
+```
+
+Save it and close.
+
+### Step 3 — Open in IntelliJ
+
+Open IntelliJ IDEA and click **File → Open**, then select the `restaurant-management-system` folder — the one that contains `pom.xml`. Click OK.
+
+When IntelliJ asks if you trust the project, click **Trust Project**. It will start downloading JavaFX and the MySQL connector automatically. This only happens once and takes about 30 seconds.
+
+### Step 4 — Run the app
+
+Look for the **Maven panel** on the right side of IntelliJ (click the `m` icon). Expand:
+
+```
+Plugins → javafx → javafx:run
+```
+
+Double-click `javafx:run`. The login screen should appear.
+
+If you want a one-click shortcut for next time: go to **Run → Edit Configurations → + → Maven**, set the command to `javafx:run` and the working directory to the project folder. Save it, and from now on just press the green play button.
 
 ---
 
-## 🛠 Project Structure
+## Running on multiple computers at the same time
+
+If you want to demo the app with multiple people connected to the same database (great for showing the real-time sync), one computer runs MySQL and the others connect to it over the network.
+
+On the host computer, find your local IP address by running `ipconfig` in Command Prompt and looking for the IPv4 address. Then open MySQL Workbench and run:
+
+```sql
+CREATE USER 'root'@'%' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON restaurant_db.* TO 'root'@'%';
+FLUSH PRIVILEGES;
+```
+
+Also allow MySQL through the firewall by running this in Command Prompt as Administrator:
+
+```
+netsh advfirewall firewall add rule name="MySQL" protocol=TCP dir=in localport=3306 action=allow
+```
+
+On each other computer, open `db.properties` and replace `localhost` with the host computer's IP address. Run the app normally. Everyone will be connected to the same database and can see each other's actions after clicking Refresh.
+
+---
+
+## Project structure
 
 ```
 restaurant-management-system/
-├── pom.xml                         ← Maven config (JavaFX + MySQL deps)
+├── pom.xml
 └── src/main/
     ├── java/com/restaurant/
-    │   ├── app/        Main.java   ← Entry point
-    │   ├── db/         Database    ← JDBC connection helper
-    │   ├── model/      POJOs       ← Plain data classes
-    │   ├── dao/        *DAO        ← All SQL lives here
-    │   ├── ui/         *Dashboard  ← One file per role + LoginView, MainView
-    │   └── util/       Session, Dialogs
+    │   ├── app/
+    │   │   └── Main.java               ← starts the app
+    │   ├── db/
+    │   │   └── Database.java           ← opens MySQL connections
+    │   ├── model/                      ← plain Java classes (Employee, Order, Bill, etc.)
+    │   ├── dao/                        ← all database queries live here
+    │   ├── ui/                         ← one dashboard file per role
+    │   └── util/
+    │       ├── Session.java            ← tracks who is logged in
+    │       ├── Dialogs.java            ← popup helpers
+    │       └── NotificationService.java ← reservation reminders
     └── resources/
-        ├── css/theme.css           ← Dark theme styling
-        ├── db.properties           ← MySQL credentials (you edit this)
-        └── sql/schema.sql          ← DB schema + seed data
+        ├── css/theme.css               ← warm bistro theme
+        ├── db.properties               ← your MySQL credentials go here
+        └── sql/schema.sql              ← run this once to create the database
 ```
 
 ---
 
-## 🐞 Troubleshooting
+## Common problems
 
-**"Database connection failed" popup at startup**
-- Is the MySQL service running? On Windows check Services; on Mac/Linux: `mysql.server status` or `systemctl status mysql`.
-- Did you edit `db.properties` with the correct password?
-- Did you run `schema.sql`? Verify with `SHOW DATABASES;` — you should see `restaurant_db`.
-- If the error mentions `Public Key Retrieval is not allowed`, the URL in `db.properties` already has `allowPublicKeyRetrieval=true` — make sure you didn't remove it.
+**"Database connection failed" when starting**
+Make sure MySQL is running. Open Task Manager, go to the Services tab, and look for MySQL80 — it should say Running. If it's stopped, right-click and start it. Also double-check your password in `db.properties`.
 
-**"Error: JavaFX runtime components are missing"**
-- Use the Maven `javafx:run` goal (Option A above) — that's literally what it's there to fix.
+**The app opens but looks completely unstyled**
+This happens if IntelliJ cached an old version of the CSS. Run `mvn clean javafx:run` in the terminal instead of using the play button.
 
-**Maven dependencies fail to download**
-- Check your internet connection.
-- In IntelliJ, right-click `pom.xml` → **Maven → Reload Project**.
+**"JavaFX runtime components are missing"**
+Don't run Main.java directly — use `javafx:run` from the Maven panel. That's what it's there for.
 
-**Login fails with the demo accounts**
-- Re-run `schema.sql` (it does a `DROP DATABASE IF EXISTS` first, so it's safe to run again).
+**Login doesn't work with the demo accounts**
+Re-run `schema.sql` in MySQL Workbench. It resets everything back to the original state.
 
-**Port 3306 already in use / MySQL on a different port**
-- Update `db.url` in `db.properties` to point at your actual port, e.g. `jdbc:mysql://localhost:3307/restaurant_db?...`
+**My friend can't connect to my database**
+Make sure they're on the same WiFi or hotspot as you. If you're using a school network, it might be blocking connections between computers — switch to a mobile hotspot instead. Also make sure you did the firewall step above.
 
 ---
 
-## 📝 Notes for the assignment
+## How the order flow works
 
-- Maps to the spec's actors: Manager, Receptionist, Waiter, Chef, Cashier (all five implemented).
-- Implements the requested use cases: Add/Modify Tables, Search Tables, Place Order, Update Order, Create Reservation, Cancel Reservation, Check-in, Make Payment.
-- Order status flow: `RECEIVED` → `PREPARING` (waiter sends to kitchen) → back to `RECEIVED` ("ready" — chef has plated it) → `COMPLETE` (cashier processes payment).
-- Passwords are stored in plain text on purpose — this is a school project, kept simple so it's easy to demo and inspect the database.
+It goes like this, step by step:
 
-Have fun! 🍕
+1. Receptionist reserves a table → table status changes to **Reserved**
+2. Receptionist checks in the customer when they arrive
+3. Waiter creates an order for the table → status changes to **Occupied**
+4. Waiter adds items from the menu for each seat and sends to kitchen
+5. Chef sees the order in the queue, marks it as **Ready** when done
+6. Cashier issues the bill (10% tax added automatically), adds tip if any
+7. Cashier processes payment (cash / card / check)
+8. Table automatically goes back to **Free**
+
+---
+
+## Notes
+
+Passwords are stored as plain text in the database. This is intentional — it keeps the code simple and makes it easy to inspect the data during a demo or grading. In a real production system you would hash them.
+
+The notification system checks for upcoming reservations every 60 seconds and shows a popup if any reservation is within 30 minutes. It only alerts once per reservation so it doesn't spam you.
+
+// we used GPT to write this one. not that essential, right?
