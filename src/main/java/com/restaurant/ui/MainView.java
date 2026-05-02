@@ -1,6 +1,7 @@
 package com.restaurant.ui;
 
 import com.restaurant.model.Employee;
+import com.restaurant.util.NotificationService;
 import com.restaurant.util.Session;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,16 +13,15 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class MainView {
-
     public static Scene build(Stage stage, Employee emp) {
         BorderPane root = new BorderPane();
 
         root.setTop(buildTopBar(stage, emp));
         root.setCenter(buildContentForRole(emp));
 
+        NotificationService.start();
         return new Scene(root);
     }
-
     private static HBox buildTopBar(Stage stage, Employee emp) {
         HBox bar = new HBox(16);
         bar.getStyleClass().add("topbar");
@@ -29,19 +29,16 @@ public class MainView {
 
         Label brand = new Label("\uD83C\uDF7D  Restaurant MS");
         brand.getStyleClass().add("topbar-title");
-
         Label rolePill = new Label(emp.getRole().name());
         rolePill.getStyleClass().add("role-pill");
-
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-
         Label hello = new Label("Signed in as " + emp.getFullName());
         hello.getStyleClass().add("topbar-user");
-
         Button logout = new Button("Logout");
         logout.getStyleClass().add("btn-ghost");
         logout.setOnAction(e -> {
+            NotificationService.stop();
             Session.clear();
             Scene s = LoginView.build(stage);
             s.getStylesheets().add(MainView.class.getResource("/css/theme.css").toExternalForm());
